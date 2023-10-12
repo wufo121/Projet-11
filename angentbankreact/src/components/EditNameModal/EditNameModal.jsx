@@ -21,7 +21,7 @@ function EditNameModal() {
         async function fetchData() {
             try {
                 const response = await fetch(apiUrl, {
-                    method: 'GET',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
@@ -30,9 +30,9 @@ function EditNameModal() {
 
                 if (response.ok) {
                     const userData = await response.json();
-                    setUserName(userData.userName);
-                    setFirstName(userData.firstName);
-                    setLastName(userData.lastName);
+                    setUserName(userData.body.userName);
+                    setFirstName(userData.body.firstName);
+                    setLastName(userData.body.lastName);
                     console.log(userData)
                 } else {
                     console.error('API request failed with status code:', response.status);
