@@ -3,8 +3,54 @@ import logo from '../../assets/argentBankLogo.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout, selectUserName, selectToken, setUserInfo} from '../redux/userSlice';
+import React, { useEffect } from 'react';
 
 function Header() {
+
+  const token = useSelector(selectToken);
+  const userName = useSelector(selectUserName);
+  const isAuthenticated = useSelector(selectToken) !== null;
+  const dispatch = useDispatch();
+  const apiUrl = 'http://localhost:3001/api/v1/user/profile';
+  
+
+  const handleLogout = () => {
+    dispatch(logout());
+  }
+
+  useEffect(() => {
+    
+      async function fetchUserData() {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            dispatch(setUserInfo({
+              userName: userData.body.userName,
+              firstName: userData.body.firstName,
+              lastName: userData.body.lastName
+            }));
+          } else {
+            console.error('API request failed with status code:', response.status);
+          }
+        } catch (error) {
+          console.error('Erreur lors de la connexion :', error);
+        }
+      }
+
+      fetchUserData();
+    
+  }, [isAuthenticated, token, dispatch]);
+
     return(
         <nav className="main-nav">
       <Link to ="/" className="main-nav-logo" href="./index.html">
@@ -16,10 +62,19 @@ function Header() {
         <h1 className="sr-only">Argent Bank</h1>
       </Link>
       <div>
-        <Link to="/SignIn" className="main-nav-item">
-          <FontAwesomeIcon  icon={faUserCircle}/>
+        {isAuthenticated ? (
+          <div>
+            <p>Welcome, {userName}</p>
+            <Link to="/" onClick={handleLogout} className="main-nav-item"> 
+              Log Out
+            </Link>
+          </div>
+        ) : (
+          <Link to="/SignIn" className="main-nav-item">
+            <FontAwesomeIcon icon={faUserCircle} />
             Sign In
-        </Link>
+          </Link>
+        )}
       </div>
     </nav>
     )

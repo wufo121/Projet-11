@@ -1,7 +1,7 @@
 import '../Home/Home.scss'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEmail, setPassword, setError, clearError, setToken } from '../../components/redux/userSlice';
+import { setEmail, setPassword, setError, clearError, setToken} from '../../components/redux/userSlice';
 
 function SignIn () {
 
@@ -53,6 +53,8 @@ function SignIn () {
         console.error('Erreur lors de la connexion :', error);
       }
     };
+
+    
 
 
      return (

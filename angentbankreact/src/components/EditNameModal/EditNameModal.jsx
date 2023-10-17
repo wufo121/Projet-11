@@ -1,7 +1,7 @@
 import './EditNameModal.scss';
 import { useSelector, useDispatch } from 'react-redux'; 
 import { selectToken,  closeModal, setUserInfo, selectFirstName, selectUserName, selectLastName } from '../redux/userSlice';
-import React, { useEffect } from 'react';
+
 
 
 function EditNameModal() {
@@ -23,34 +23,7 @@ function EditNameModal() {
         dispatch(setUserInfo({ userName: e.target.value, firstName, lastName }));
     }
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                });
-
-                if (response.ok) {
-                    const userData = await response.json();
-                    dispatch(setUserInfo({
-                         userName: userData.body.userName,
-                         firstName: userData.body.firstName,
-                         lastName: userData.body.lastName }));
-                    console.log(userData)
-                } else {
-                    console.error('API request failed with status code:', response.status);
-                }
-            } catch (error) {
-                console.error('Erreur lors de la connexion :', error);
-            }
-        }
-        
-        fetchData();
-    }, [apiUrl, token, dispatch]);
+   
 
 
     const handleSave = async () => {
