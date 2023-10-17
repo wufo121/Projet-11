@@ -6,6 +6,10 @@ const initialState = {
   error: '',
   token : null,
   isModalOpen: false,
+  userName: '',
+  firstName: '',
+  lastName:'',
+  isAuthenticated: false,
 };
 
 const userSlice = createSlice({
@@ -25,10 +29,14 @@ const userSlice = createSlice({
       state.error = '';
     },
     setToken: (state, action) => {
-        state.token = action.payload
+      state.token = action.payload;
+      state.isAuthenticated = true;
     },
     logout: (state) => {
-        state.token=null
+      state.token = null;
+      state.isAuthenticated = false;
+      state.email = '';
+      state.password = '';
     },
     openModal: (state) => {
       state.isModalOpen = true;
@@ -36,10 +44,29 @@ const userSlice = createSlice({
     closeModal: (state) => {
       state.isModalOpen = false;
     },
+    setUserInfo: (state, action) => {
+      state.firstName = action.payload.firstName;
+      state.lastName = action.payload.lastName
+      state.userName = action.payload.userName
+    }
   },
 });
 
-export const { setEmail, setPassword, setError, clearError, setToken,logout, openModal,
-  closeModal } = userSlice.actions;
+export const {
+   setEmail,
+   setPassword,
+   setError,
+   clearError,
+   setToken,
+   logout, 
+   openModal,
+   closeModal,
+   setUserInfo,
+ } = userSlice.actions;
 export default userSlice.reducer;
+
+
 export const selectToken = (state) => state.user.token
+export const selectUserName = (state) => state.user.userName;
+export const selectFirstName = (state) => state.user.firstName;
+export const selectLastName = (state) => state.user.lastName;

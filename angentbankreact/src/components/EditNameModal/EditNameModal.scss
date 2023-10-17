@@ -28,7 +28,10 @@
     label{
         color:white;
 
-        
+        & + input[disabled]{
+            opacity: 0.7;
+            color: whitesmoke;
+        }
     }
 
     input{

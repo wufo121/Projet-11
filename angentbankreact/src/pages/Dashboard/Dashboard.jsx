@@ -1,4 +1,4 @@
-
+import './Dashboard.scss'
 import EditNameModal from '../../components/EditNameModal/EditNameModal';
 import { useSelector, useDispatch } from 'react-redux';
 import { openModal, closeModal } from '../../components/redux/userSlice';
@@ -18,7 +18,7 @@ function Dashboard() {
   
     return (
         <main className="main bg-dark">
-            <div className="header">
+            <div className="headerDashboard">
                 <h1>Welcome back<br />Tony Jarvis!</h1>
                 <button className="edit-button"onClick={handleOpenModal}>Edit Name</button>
             </div>

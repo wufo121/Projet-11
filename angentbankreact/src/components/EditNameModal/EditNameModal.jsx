@@ -1,20 +1,26 @@
 import './EditNameModal.scss';
 import { useSelector, useDispatch } from 'react-redux'; 
-import { selectToken,  closeModal } from '../redux/userSlice';
-import React, { useState, useEffect } from 'react';
+import { selectToken,  closeModal, setUserInfo, selectFirstName, selectUserName, selectLastName } from '../redux/userSlice';
+import React, { useEffect } from 'react';
+
 
 function EditNameModal() {
     const token = useSelector(selectToken);
-    const apiUrl = 'http://localhost:3001/api/v1/user/profile';
+    const userName = useSelector(selectUserName)
+    const firstName = useSelector(selectFirstName)
+    const lastName = useSelector(selectLastName)
     
-    const [userName, setUserName] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-
+    
+    
+    
+    const apiUrl = 'http://localhost:3001/api/v1/user/profile';
     const dispatch = useDispatch();
-
     const handleCloseModal = () => {
         dispatch(closeModal());
+    }
+
+    const handleUsernameChange = (e) => {
+        dispatch(setUserInfo({ userName: e.target.value, firstName, lastName }));
     }
 
     useEffect(() => {
@@ -30,9 +36,10 @@ function EditNameModal() {
 
                 if (response.ok) {
                     const userData = await response.json();
-                    setUserName(userData.body.userName);
-                    setFirstName(userData.body.firstName);
-                    setLastName(userData.body.lastName);
+                    dispatch(setUserInfo({
+                         userName: userData.body.userName,
+                         firstName: userData.body.firstName,
+                         lastName: userData.body.lastName }));
                     console.log(userData)
                 } else {
                     console.error('API request failed with status code:', response.status);
@@ -41,10 +48,35 @@ function EditNameModal() {
                 console.error('Erreur lors de la connexion :', error);
             }
         }
-
+        
         fetchData();
-    }, [apiUrl, token]);
+    }, [apiUrl, token, dispatch]);
 
+
+    const handleSave = async () => {
+        try {
+            const response = await fetch(apiUrl, {
+                method:'PUT',
+                headers:{
+                    'Content-Type':'application/json',
+                    'Authorization':`Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    userName: userName
+                })
+            })
+
+        if (response.ok) {
+            dispatch(setUserInfo({ userName: userName, firstName, lastName }));
+            } else {
+                console.error('API request failed with status code:', response.status);
+                
+            }
+        } catch (error) {
+            console.error('Erreur lors de la connexion :', error);
+           
+        }
+    }
     return (
         <div className="ModalEditName" >
             <div htmlFor="EditNameLabel" className='EditName'> 
@@ -55,7 +87,7 @@ function EditNameModal() {
                         type="text"
                         id="EditNameLabel"
                         value={userName}
-                        onChange={(e) => setUserName(e.target.value)} 
+                        onChange={handleUsernameChange}
                         required
                     />
                 </div>
@@ -65,6 +97,7 @@ function EditNameModal() {
                         type="text"
                         id="EditFirstNameLabel"
                         value={firstName}
+                        disabled={true}
                     />
                 </div>
                 <div>
@@ -73,10 +106,11 @@ function EditNameModal() {
                         type="text"
                         id="EditLastNameLabel"
                         value={lastName}
+                        disabled={true}
                     />
                 </div>
                 <div className='Buttons'>
-                    <button>Save</button>
+                    <button onClick={handleSave}>Save</button>
                     <button onClick={handleCloseModal}>Cancel</button> 
                 </div>
             </div>
