@@ -41,7 +41,9 @@ function EditNameModal() {
 
         if (response.ok) {
             dispatch(setUserInfo({ userName: userName, firstName, lastName }));
-            } else {
+            handleCloseModal()
+        
+        } else {
                 console.error('API request failed with status code:', response.status);
                 
             }

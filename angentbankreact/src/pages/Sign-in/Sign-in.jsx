@@ -1,4 +1,4 @@
-import '../Home/Home.scss'
+import './Sign-in.scss'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEmail, setPassword, setError, clearError, setToken} from '../../components/redux/userSlice';
@@ -58,7 +58,7 @@ function SignIn () {
 
 
      return (
-    <main className="main bg-dark">
+    <main className="main bg-dark-signIn">
       <section className="sign-in-content">
         <i className="fa fa-user-circle sign-in-icon"></i>
         <h1>Sign In</h1>

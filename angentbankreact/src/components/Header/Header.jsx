@@ -63,8 +63,8 @@ function Header() {
       </Link>
       <div>
         {isAuthenticated ? (
-          <div>
-            <p>Welcome, {userName}</p>
+          <div className='connected'>
+            <p> {userName}</p>
             <Link to="/" onClick={handleLogout} className="main-nav-item"> 
               Log Out
             </Link>

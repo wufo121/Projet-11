@@ -17,7 +17,7 @@ function Dashboard() {
     };
   
     return (
-        <main className="main bg-dark">
+        <main className="main bg-dark-dashboard">
             <div className="headerDashboard">
                 <h1>Welcome back<br />Tony Jarvis!</h1>
                 <button className="edit-button"onClick={handleOpenModal}>Edit Name</button>
