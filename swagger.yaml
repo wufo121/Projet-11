@@ -8,15 +8,17 @@ host: localhost:3001
 basePath: /api/v1
 schemes:
   - http
-  - https
-
 paths:
   /user/login:
     post:
       tags:
         - User Module
       summary: Login
-      description: API for Login
+      description: API for user login
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
         - in: body
           name: body
@@ -24,8 +26,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/Login'
-      produces:
-        - application/json
       responses:
         '200':
           description: Login Successfully
@@ -35,13 +35,16 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
-
   /user/signup:
     post:
       tags:
         - User Module
       summary: Signup
-      description: API for Signup
+      description: API for user signup
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
         - in: body
           name: body
@@ -49,8 +52,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/User'
-      produces:
-        - application/json
       responses:
         '200':
           description: Signup Successfully
@@ -60,20 +61,21 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
-
   /user/profile:
-    post:
+    get:
       security:
         - Bearer: []
       tags:
         - User Module
       summary: User Profile API
       description: API for fetching a user profile
+      produces:
+        - application/json
       responses:
         '200':
           description: User profile retrieved successfully
           schema:
-            $ref: '#/definitions/ApiResponse'
+            $ref: '#/definitions/UserProfile'
         '400':
           description: Invalid Fields
         '500':
@@ -85,6 +87,10 @@ paths:
         - User Module
       summary: User Profile API
       description: API for updating a user profile
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
         - in: body
           name: body
@@ -92,40 +98,168 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/UserProfile'
-      produces:
-        - application/json
       responses:
         '200':
-          description: User profile retrieved successfully
+          description: User profile updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
           description: Invalid Fields
         '500':
           description: Internal Server Error
-
-  /user/transaction:
+  /user/transaction/{transactionid}:
     post:
       security:
         - Bearer: []
       tags:
-        - User Module
-      summary: API for transaction
-      description: API for fetching transaction
-      parameters:
-        - in: body
-          name: transaction
-          description: Transaction data
-          required: true
-          schema:
-            $ref: '#/definitions/Transaction'
+        - User Transaction
+      summary: API for fetching a transaction
+      description: API for fetching a transaction
       produces:
         - application/json
+      parameters:
+        - in: path
+          name: accountid
+          description: ID of the transaction to fetch
+          required: true
+          type: string
       responses:
         '200':
-          description: Transaction data retrieved successfully
+          description: Transaction retrieved successfully
+          schema:
+            $ref: '#/definitions/Transaction'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+    put:
+      security:
+        - Bearer: []
+      tags:
+        - User Transaction
+      summary: Update Transaction
+      description: API for updating a user transaction
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: accountid
+          description: ID de la transaction à mettre à jour
+          required: true
+          type: string
+        - in: body
+          name: transaction
+          description: Transaction data to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/TransactionUpdate'
+      responses:
+        '200':
+          description: Transaction updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Transaction
+      summary: Get Transaction
+      description: API for retrieving transaction information
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: accountid
+          description: ID de la transaction à récupérer
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Transaction information retrieved successfully
+          schema:
+            $ref: '#/definitions/TransactionGet'
+        '404':
+          description: Transaction not found
+        '500':
+          description: Internal Server Error
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - User Transaction
+      summary: Delete Transaction
+      description: API for deleting a user transaction
+      parameters:
+        - in: path
+          name: accountid
+          description: ID de la transaction à supprimer
+          required: true
+          type: string
+      responses:
+        '204':
+          description: Transaction deleted successfully
+        '404':
+          description: Transaction not found
+        '500':
+          description: Internal Server Error
+  /user/transaction/{transactionid}/{month}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Transaction 
+      summary: API for get a transaction of a specific month
+      description: API for fetching a transaction of a specific month
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: accountid
+          description: ID of the transaction to fetch per month
+          required: true
+          type: string
+        - in: path
+          name: month
+          description: Month in yyyy-MM format
+          required: true
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Transaction retrieved successfully
+          schema:
+            $ref: '#/definitions/TransactionOfMonth'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+  /user/accounts/{accountid}/balance:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - User Account
+      summary: Get Account Balances
+      description: API for fetching account balances
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: accountid
+          description: ID of the account to fetch balances
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Account balances retrieved successfully
+          schema:
+            $ref: '#/definitions/AccountBalancesResponse'
         '400':
           description: Invalid Fields
         '500':
@@ -136,74 +270,132 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
-
 definitions:
   User:
-    properties:
-      email:
-        type: string
-        description: user email
-      password:
-        type: string
-        description: user password
-      firstName:
-        type: string
-        description: user first name
-      lastName:
-        type: string
-        description: user last name
-      userName:
-        type: string
-        description: user public name
-
-  Login:
-    properties:
-      email:
-        type: string
-        description: user email
-      password:
-        type: string
-        description: user password
-
-  ApiResponse:
     type: object
     properties:
-      status:
-        type: integer
-      message:
-        type: string
-      body:
-        type: object
-        properties:
-          id:
-            type: string
-          email:
-            type: string
-
-  LoginResponse:
-    type: object
-    properties:
-      token:
-        type: string
-
-  UserProfile:
-    type: object
-    properties:
-      userName:
-        type: string
-
-  Transaction:
-    type: object
-    properties:
-      destinataire:
-        type: string
-        description: The recipient of the transaction.
-      type:
-        type: string
-        description: The type of the transaction.
-      category:
-        type: string
-        description: The category of the transaction.
-      note:
-        type: string
-        description: A note associated with the transaction
+  email:
+    type: string
+    description: User email
+  password:
+    type: string
+    description: User password
+  firstName:
+    type: string
+    description: User first name
+  lastName:
+    type: string
+    description: User last name
+  userName:
+    type: string
+    description: User public name
+Login:
+  type: object
+  properties:
+    email:
+      type: string
+      description: User email
+    password:
+      type: string
+      description: User password
+ApiResponse:
+  type: object
+  properties:
+    status:
+      type: integer
+    message:
+      type: string
+    body:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+LoginResponse:
+  type: object
+  properties:
+    token:
+      type: string
+UserProfile:
+  type: object
+  properties:
+    userName:
+      type: string
+Transaction:
+  type: object
+  properties:
+    destinataire:
+      type: string
+      description: The recipient of the transaction.
+    type:
+      type: string
+      description: The type of the transaction.
+    category:
+      type: string
+      description: The category of the transaction.
+    note:
+      type: string
+      description: A note associated with the transaction
+    amount:
+      type: number
+      description: The amount of the transaction.
+    Balance:
+      type: number
+      description: The current balance after the transaction
+TransactionUpdate:
+  type: object
+  properties:
+    category:
+      type: string
+      description: The updated category of the transaction.
+    note:
+      type: string
+      description: The updated note associated with the transaction
+TransactionGet:
+  type: object
+  properties:
+    destinataire:
+      type: string
+      description: The recipient of the transaction.
+    type:
+      type: string
+      description: The type of the transaction.
+    category:
+      type: string
+      description: The category of the transaction.
+    note:
+      type: string
+      description: A note associated with the transaction.
+    date:
+      type: string
+      format: date
+      description: The date of the transaction.
+    amount:
+      type: number
+      description: The amount of the transaction.
+    Balance:
+      type: number
+      description: The current balance after the transaction
+TransactionDelete:
+  type: object
+  properties:
+    message:
+      type: string
+      description: Message indicating that the transaction has been successfully deleted
+AccountBalancesResponse:
+  type: object
+  properties:
+    mainAccountBalance:
+      type: number
+      description: The balance of the main account.
+    savingsAccountBalance:
+      type: number
+      description: The balance of the savings account.
+TransactionOfMonth:
+  type: object
+  properties:
+    date:
+      type: string
+      format: date
+      description: The date of the transaction.
