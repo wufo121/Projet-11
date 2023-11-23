@@ -21,7 +21,7 @@ function Header() {
   }
 
   useEffect(() => {
-    
+    if (isAuthenticated && token) {
       async function fetchUserData() {
         try {
           const response = await fetch(apiUrl, {
@@ -31,7 +31,7 @@ function Header() {
               'Authorization': `Bearer ${token}`
             },
           });
-
+  
           if (response.ok) {
             const userData = await response.json();
             dispatch(setUserInfo({
@@ -46,9 +46,9 @@ function Header() {
           console.error('Erreur lors de la connexion :', error);
         }
       }
-
+  
       fetchUserData();
-    
+    }
   }, [isAuthenticated, token, dispatch]);
 
     return(
